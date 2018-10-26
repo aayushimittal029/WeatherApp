@@ -22,29 +22,108 @@ import './views'
 Item {
     signal next();
     signal back();
-    width: 421
-    height: 750
-    property alias rectanglemain: rectanglemain
-    z: -2147483647
     // App Page
     Page{
-        width: 421
-        height: 750
-        z: 1
-        anchors.rightMargin: 0
-        anchors.bottomMargin: 0
-        anchors.leftMargin: 0
-        anchors.topMargin: 0
         anchors.fill: parent
         // Adding App Page Header Section
+        Component.onCompleted: {
+            var coordinates = []
+
+            request('http://api.openweathermap.org/data/2.5/weather?q=San Jose,us&appid=668f6d8c77a2d45bc2e5e2d601c838e2&units=imperial', function (o) {
+                var d = eval('new Object(' + o.responseText + ')');
+                console.log(JSON.stringify(d));
+
+                text20.text = d.main.temp + " \xB0 F"
+                text21.text = d.main.temp_max + " \xB0 F"
+                text22.text = d.main.temp_min + " \xB0 F"
+                text7.text = "Wind : " + Math.floor(d.wind.speed) + " mph";
+                text18.text = "Humidity : " + Math.floor(d.main.humidity) + " %";
+                text19.text = "Visibility : " + Math.floor(d.visibility / 1600) + " mi";
+                image1.source = "assets/clouds.png"
+                coordinates[0] = d.coord.lon
+                coordinates[1] = d.coord.lat
+                getForcastData(coordinates);
+            });
+        }
+
+        function getForcastData(coordinates){
+            var forecastUrl = "http://api.openweathermap.org/data/2.5/forecast?lat="+ coordinates[1] + "&lon=" + coordinates[0] +"&appid=668f6d8c77a2d45bc2e5e2d601c838e2&units=imperial"
+            console.log(forecastUrl);
+            var forecasts = [];var k =0;
+            request(forecastUrl, function (o) {
+
+                var forecastData = new Object();
+                var days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+                var month=["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+                var d = eval('new Object(' + o.responseText + ')');
+                for(var i =0; i< d.list.length ;i ++ ){
+                    var subData = d.list[i];
+                    var temp = subData.dt_txt.split(" ")[0];
+                    if(!forecastData[temp]){
+                        forecastData[temp] = subData;
+                        var tDate = new Date(temp);
+                        forecastData[temp].dayOfWeek = days[tDate.getDay()];
+                        forecastData[temp].date = tDate.getDate() + "th " + month[tDate.getMonth()];
+                        forecasts[k++]= forecastData[temp];
+                    }
+                    else {
+                        if(forecastData[temp].main.temp_min > subData.main.temp_min)
+                            forecastData[temp].main.temp_min = subData.main.temp_min;
+
+                        if(forecastData[temp].main.temp_max < subData.main.temp_max)
+                            forecastData[temp].main.temp_max = subData.main.temp_max;
+                    }
+                };
+                console.log(JSON.stringify(forecasts));
+                fillForcastTexts(forecasts);
+            });
+        }
+        function fillForcastTexts(forecasts){
+            text2.text =  "Tomorrow (" + forecasts[0].date+ ")"
+//            text8.text = "\u2193" + "\u2191" + Math.floor(forecasts[0].main.temp_max) + " \xB0 F"
+            text8.text = Math.floor(forecasts[0].main.temp_max) + " \xB0 F"
+            text9.text = Math.floor(forecasts[0].main.temp_min) + " \xB0 F"
+            text23.text = forecasts[0].weather[0].description
+
+
+            text3.text = forecasts[1].dayOfWeek + " (" + forecasts[1].date + ")"
+            text10.text = Math.floor(forecasts[1].main.temp_max) + " \xB0 F"
+            text11.text = Math.floor(forecasts[1].main.temp_min) + " \xB0 F"
+            text24.text = forecasts[1].weather[0].description
+
+            text4.text = forecasts[2].dayOfWeek + " (" + forecasts[2].date + ")"
+            text12.text = Math.floor(forecasts[2].main.temp_max) + " \xB0 F"
+            text13.text = Math.floor(forecasts[2].main.temp_min) + " \xB0 F"
+            text25.text = forecasts[2].weather[0].description
+
+            text5.text = forecasts[3].dayOfWeek + " (" + forecasts[3].date + ")"
+            text14.text = Math.floor(forecasts[3].main.temp_max) + " \xB0 F"
+            text15.text = Math.floor(forecasts[3].main.temp_min) + " \xB0 F"
+            text26.text = forecasts[3].weather[0].description
+
+            text6.text = forecasts[4].dayOfWeek + " (" + forecasts[4].date + ")"
+            text16.text = Math.floor(forecasts[4].main.temp_max) + " \xB0 F"
+            text17.text = Math.floor(forecasts[4].main.temp_max) + " \xB0 F"
+            text27.text = forecasts[4].weather[0].description
+
+        }
+        function request(url, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = (function(myxhr) {
+                return function() {
+                    if(xhr.readyState === 4) callback(myxhr)
+                }
+            })(xhr);
+            xhr.open('GET', url, true);
+            xhr.send('');
+        }
 
         header: ToolBar{
             id:header
-            width: 421
+
             contentHeight: 56 * app.scaleFactor
             Material.primary: app.primaryColor
             RowLayout{
-                anchors.leftMargin: 16
                 anchors.fill: parent
                 spacing:0
                 Item{
@@ -86,28 +165,12 @@ Item {
         // TODO:-Provide Code here to add items to the Page
         // Button to navigate to next page
         Rectangle{
-            id: rectanglemain
-            width: 330
-
+            anchors.fill: parent
 
             Rectangle {
                 id: rectangle
-                width: 330
-                height: 712
                 color: "#00bfff"
-                anchors.bottomMargin: -8
-                anchors.leftMargin: 8
-                anchors.topMargin: 8
-                anchors.rightMargin: -79
                 anchors.fill: parent
-
-
-
-
-
-
-
-
                 Text {
                     id: text20
                     x: 145
@@ -115,39 +178,66 @@ Item {
                     width: 88
                     height: 39
                     text: qsTr("Today")
+                    visible: true
                     font.pixelSize: 22
 
                     Rectangle {
                         id: rectangle2
                         x: -135
                         y: -107
-                        width: 382
+                        width: 402
                         height: 239
                         color: "#4169e1"
                         z: 1
-                    }
-                }
 
+                        Text {
+                            id: text7
+                            x: 41
+                            y: 215
+                            width: 88
+                            height: 24
+                            color: "#ffffff"
+                            text: qsTr("Text")
+                            font.pixelSize: 12
+                        }
+
+                        Text {
+                            id: text18
+                            x: 147
+                            y: 215
+                            width: 88
+                            height: 24
+                            color: "#ffffff"
+                            text: qsTr("Text")
+                            font.pixelSize: 12
+                        }
+
+                        Text {
+                            id: text19
+                            x: 261
+                            y: 215
+                            width: 88
+                            height: 24
+                            color: "#ffffff"
+                            text: qsTr("Text")
+                            font.pixelSize: 12
+                        }
+                    }
+
+                }
 
                 Rectangle {
                     id: rectangle4
                     x: -8
                     y: -47
-                    width: 421
-                    height: 750
                     color: "#1e90ff"
                     z: -1
                 }
-
-
-
-
-
                 Button{
-                    x: 138
-                    y: 141
+                    x: 132
+                    y: 114
                     width: 114
-                    height: 14
+                    height: 11
                     Material.elevation :10
                     font.pixelSize: app.titleFontSize
                     //font.bold: true
@@ -164,115 +254,13 @@ Item {
                         y: 43
                         width: 101
                         height: 29
+                        color: "#ffffff"
                         text: qsTr("San Jose")
                         font.family: "Arial"
                         horizontalAlignment: Text.AlignHCenter
                         font.pixelSize: 17
                     }
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-                Button {
-                    id: getEverything
-                    x: 145
-                    y: 159
-                    text: qsTr("Open in maps")
-                    onClicked: {
-
-                        var coordinates = []
-
-                        request('http://api.openweathermap.org/data/2.5/weather?q=San Jose,us&appid=668f6d8c77a2d45bc2e5e2d601c838e2&units=imperial', function (o) {
-                            console.log(o.responseText);
-                            var d = eval('new Object(' + o.responseText + ')');
-                            text20.text = d.main.temp + " \xB0 F"
-                            text21.text = d.main.temp_max + " \xB0 F"
-                            text22.text = d.main.temp_min + " \xB0 F"
-                            image1.source = "assets/clouds.png"
-                            coordinates[0] = d.coord.lon
-                            coordinates[1] = d.coord.lat
-                            getForcastData(coordinates);
-                        });
-                        function getForcastData(coordinates){
-                            var forecastUrl = "http://api.openweathermap.org/data/2.5/forecast?lat="+ coordinates[1] + "&lon=" + coordinates[0] +"&appid=668f6d8c77a2d45bc2e5e2d601c838e2&units=imperial"
-                            console.log(forecastUrl);
-                            var forecasts = [];var k =0;
-                            request(forecastUrl, function (o) {
-
-                                var forecastData = new Object();
-                                var days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-                                var d = eval('new Object(' + o.responseText + ')');
-                                for(var i =0; i< d.list.length ;i ++ ){
-                                    var subData = d.list[i];
-                                    var temp = subData.dt_txt.split(" ")[0];
-                                    if(!forecastData[temp]){
-                                        forecastData[temp] = subData;
-                                        forecastData[temp].dayOfWeek = days[new Date(temp).getDay()];
-                                        forecastData[temp].date = temp;
-                                        forecasts[k++]= forecastData[temp];
-                                    }
-                                    else {
-                                        if(forecastData[temp].main.temp_min > subData.main.temp_min)
-                                            forecastData[temp].main.temp_min = subData.main.temp_min;
-
-                                        if(forecastData[temp].main.temp_max < subData.main.temp_max)
-                                            forecastData[temp].main.temp_max = subData.main.temp_max;
-                                    }
-                                };
-
-                                fillForcastTexts(forecasts);
-                            });
-                        };
-                        function fillForcastTexts(forecasts){
-                            text2.text = forecasts[0].dayOfWeek + " (" + forecasts[0].date + ")"
-                            text8.text = forecasts[0].main.temp_max
-                            text9.text = forecasts[0].main.temp_min
-                            text23.text = forecasts[0].weather[0].description
-
-
-                            text3.text = forecasts[1].dayOfWeek + " (" + forecasts[1].date + ")"
-                            text10.text = forecasts[1].main.temp_max
-                            text11.text = forecasts[1].main.temp_min
-                            text24.text = forecasts[0].weather[1].description
-
-                            text4.text = forecasts[2].dayOfWeek + " (" + forecasts[2].date + ")"
-                            text12.text = forecasts[2].main.temp_max
-                            text13.text = forecasts[2].main.temp_min
-                            text25.text = forecasts[0].weather[2].description
-
-                            text5.text = forecasts[3].dayOfWeek + " (" + forecasts[3].date + ")"
-                            text14.text = forecasts[3].main.temp_max
-                            text15.text = forecasts[3].main.temp_min
-                            text26.text = forecasts[0].weather[3].description
-
-                            text6.text = forecasts[4].dayOfWeek + " (" + forecasts[4].date + ")"
-                            text16.text = forecasts[4].main.temp_max
-                            text17.text = forecasts[4].main.temp_min
-                            text27.text = forecasts[0].weather[4].description
-
-                        }
-                        function request(url, callback) {
-                            var xhr = new XMLHttpRequest();
-                            xhr.onreadystatechange = (function(myxhr) {
-                                return function() {
-                                    if(xhr.readyState === 4) callback(myxhr)
-                                }
-                            })(xhr);
-                            xhr.open('GET', url, true);
-                            xhr.send('');
-                        }
-                    }
-                }
-
                 Image {
                     id: image1
                     x: 276
@@ -281,24 +269,11 @@ Item {
                     height: 54
                     source: "assets/sun (2).png"
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-
                 Rectangle {
                     id: rectangle1
                     x: 11
                     y: 246
-                    width: 379
+                    width: 402
                     height: 431
                     color: "#ffffff"
 
@@ -399,7 +374,7 @@ Item {
 
                     Text {
                         id: text9
-                        x: 311
+                        x: 319
                         y: 47
                         color: "#808080"
                         text: qsTr("Text")
@@ -417,7 +392,7 @@ Item {
 
                     Text {
                         id: text11
-                        x: 311
+                        x: 321
                         y: 129
                         color: "#808080"
                         text: qsTr("Text")
@@ -434,7 +409,7 @@ Item {
 
                     Text {
                         id: text13
-                        x: 313
+                        x: 323
                         y: 206
                         color: "#808080"
                         text: qsTr("Text")
@@ -453,7 +428,7 @@ Item {
 
                     Text {
                         id: text15
-                        x: 309
+                        x: 319
                         y: 278
                         height: 25
                         color: "#808080"
@@ -472,7 +447,7 @@ Item {
 
                     Text {
                         id: text17
-                        x: 313
+                        x: 323
                         y: 351
                         color: "#a9a9a9"
                         text: qsTr("Text")
@@ -543,6 +518,7 @@ Item {
                     id: text21
                     x: 308
                     y: 141
+                    color: "#ffffff"
                     text: qsTr("Max")
                     font.pixelSize: 21
                 }
@@ -555,6 +531,7 @@ Item {
                     id: text22
                     x: 311
                     y: 190
+                    color: "#ffffff"
                     text: qsTr("Min")
                     font.pixelSize: 21
                 }
