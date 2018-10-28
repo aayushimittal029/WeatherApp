@@ -28,18 +28,21 @@ Item {
         // Adding App Page Header Section
         Component.onCompleted: {
             var coordinates = []
-
-            request('http://api.openweathermap.org/data/2.5/weather?q=San Jose,us&appid=668f6d8c77a2d45bc2e5e2d601c838e2&units=imperial', function (o) {
+            var month=["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+            request('http://api.openweathermap.org/data/2.5/weather?q=New york,us&appid=668f6d8c77a2d45bc2e5e2d601c838e2&units=imperial', function (o) {
                 var d = eval('new Object(' + o.responseText + ')');
                 console.log(JSON.stringify(d));
-
+                text1.text = d.name;
+                image7.source= "assets/" + d.weather[0].description+ ".png"
                 text20.text = d.main.temp + " \xB0 F"
-                text21.text = d.main.temp_max + " \xB0 F"
-                text22.text = d.main.temp_min + " \xB0 F"
+                text30.text = d.weather[0].description;
+                text28.text= "Today, "+ month[new Date().getMonth()] +" "+new Date().getDate()
+                text21.text = Math.floor(d.main.temp_max) + " \xB0F"
+                text22.text = Math.floor(d.main.temp_min) + " \xB0F"
                 text7.text = "Wind : " + Math.floor(d.wind.speed) + " mph";
                 text18.text = "Humidity : " + Math.floor(d.main.humidity) + " %";
                 text19.text = "Visibility : " + Math.floor(d.visibility / 1600) + " mi";
-                image1.source = "assets/clouds.png"
+
                 coordinates[0] = d.coord.lon
                 coordinates[1] = d.coord.lat
                 getForcastData(coordinates);
@@ -79,33 +82,35 @@ Item {
             });
         }
         function fillForcastTexts(forecasts){
-            text2.text =  "Tomorrow (" + forecasts[0].date+ ")"
-//            text8.text = "\u2193" + "\u2191" + Math.floor(forecasts[0].main.temp_max) + " \xB0 F"
-            text8.text = Math.floor(forecasts[0].main.temp_max) + " \xB0 F"
-            text9.text = Math.floor(forecasts[0].main.temp_min) + " \xB0 F"
+            text2.text =  "Tomorrow"
+            text8.text = "\u2193" + "\u2191" + Math.floor(forecasts[0].main.temp_max) + " \xB0F"
+            text8.text = Math.floor(forecasts[0].main.temp_max) + " \xB0F"
+            text9.text = Math.floor(forecasts[0].main.temp_min) + " \xB0F"
             text23.text = forecasts[0].weather[0].description
+            image2.source= "assets/" + forecasts[0].weather[0].description+ ".png"
 
 
-            text3.text = forecasts[1].dayOfWeek + " (" + forecasts[1].date + ")"
-            text10.text = Math.floor(forecasts[1].main.temp_max) + " \xB0 F"
-            text11.text = Math.floor(forecasts[1].main.temp_min) + " \xB0 F"
+            text3.text = forecasts[1].dayOfWeek
+            text10.text = Math.floor(forecasts[1].main.temp_max) + " \xB0F"
+            text11.text = Math.floor(forecasts[1].main.temp_min) + " \xB0F"
             text24.text = forecasts[1].weather[0].description
+            image3.source= "assets/" + forecasts[1].weather[0].description+ ".png"
 
-            text4.text = forecasts[2].dayOfWeek + " (" + forecasts[2].date + ")"
-            text12.text = Math.floor(forecasts[2].main.temp_max) + " \xB0 F"
-            text13.text = Math.floor(forecasts[2].main.temp_min) + " \xB0 F"
+            text4.text = forecasts[2].dayOfWeek
+            text12.text = Math.floor(forecasts[2].main.temp_max) + " \xB0F"
+            text13.text = Math.floor(forecasts[2].main.temp_min) + " \xB0F"
             text25.text = forecasts[2].weather[0].description
-
-            text5.text = forecasts[3].dayOfWeek + " (" + forecasts[3].date + ")"
-            text14.text = Math.floor(forecasts[3].main.temp_max) + " \xB0 F"
-            text15.text = Math.floor(forecasts[3].main.temp_min) + " \xB0 F"
+            image4.source= "assets/" + forecasts[2].weather[0].description+ ".png"
+            text5.text = forecasts[3].dayOfWeek
+            text14.text = Math.floor(forecasts[3].main.temp_max) + " \xB0F"
+            text15.text = Math.floor(forecasts[3].main.temp_min) + " \xB0F"
             text26.text = forecasts[3].weather[0].description
-
-            text6.text = forecasts[4].dayOfWeek + " (" + forecasts[4].date + ")"
-            text16.text = Math.floor(forecasts[4].main.temp_max) + " \xB0 F"
-            text17.text = Math.floor(forecasts[4].main.temp_max) + " \xB0 F"
+            image5.source= "assets/" + forecasts[3].weather[0].description+ ".png"
+            text6.text = forecasts[4].dayOfWeek
+            text16.text = Math.floor(forecasts[4].main.temp_max) + " \xB0F"
+            text17.text = Math.floor(forecasts[4].main.temp_max) + " \xB0F"
             text27.text = forecasts[4].weather[0].description
-
+            image6.source= "assets/" + forecasts[4].weather[0].description+ ".png"
         }
         function request(url, callback) {
             var xhr = new XMLHttpRequest();
@@ -170,6 +175,7 @@ Item {
             Rectangle {
                 id: rectangle
                 color: "#00bfff"
+                anchors.bottomMargin: -252
                 anchors.fill: parent
                 Text {
                     id: text20
@@ -222,6 +228,36 @@ Item {
                             text: qsTr("Text")
                             font.pixelSize: 12
                         }
+
+                        Text {
+                            id: text28
+                            x: 137
+                            y: 99
+                            width: 150
+                            height: 25
+                            color: "#fbfbfb"
+                            text: qsTr("Today, ")
+                            font.bold: false
+                            font.pixelSize: 21
+                        }
+
+                        Image {
+                            id: image7
+                            x: 41
+                            y: 129
+                            width: 65
+                            height: 62
+                            source: "assets/clear sky.png"
+                        }
+
+                        Text {
+                            id: text30
+                            x: 112
+                            y: 153
+                            color: "#ffffff"
+                            text: qsTr("Sunny")
+                            font.pixelSize: 12
+                        }
                     }
 
                 }
@@ -234,10 +270,10 @@ Item {
                     z: -1
                 }
                 Button{
-                    x: 132
-                    y: 114
-                    width: 114
-                    height: 11
+                    x: 252
+                    y: 75
+                    width: 40
+                    height: 23
                     Material.elevation :10
                     font.pixelSize: app.titleFontSize
                     //font.bold: true
@@ -250,23 +286,24 @@ Item {
 
                     Text {
                         id: text1
-                        x: -101
-                        y: 43
+                        x: -103
+                        y: -1
                         width: 101
                         height: 29
                         color: "#ffffff"
                         text: qsTr("San Jose")
+                        font.bold: true
                         font.family: "Arial"
                         horizontalAlignment: Text.AlignHCenter
-                        font.pixelSize: 17
+                        font.pixelSize: 21
                     }
                 }
                 Image {
                     id: image1
-                    x: 276
-                    y: 38
-                    width: 61
-                    height: 54
+                    x: 133
+                    y: 20
+                    width: 37
+                    height: 33
                     source: "assets/sun (2).png"
                 }
                 Rectangle {
@@ -283,7 +320,7 @@ Item {
                         y: 28
                         width: 50
                         height: 50
-                        source: "assets/sunny.png"
+                        source: "assets/clear sky.png"
                     }
 
                     Image {
@@ -301,7 +338,7 @@ Item {
                         y: 111
                         width: 50
                         height: 50
-                        source: "assets/cloudy.png"
+                        source: "assets/broken clouds.png"
                     }
 
                     Image {
@@ -374,8 +411,8 @@ Item {
 
                     Text {
                         id: text9
-                        x: 319
-                        y: 47
+                        x: 322
+                        y: 45
                         color: "#808080"
                         text: qsTr("Text")
                         font.capitalization: Font.MixedCase
@@ -392,7 +429,7 @@ Item {
 
                     Text {
                         id: text11
-                        x: 321
+                        x: 322
                         y: 129
                         color: "#808080"
                         text: qsTr("Text")
@@ -401,16 +438,16 @@ Item {
 
                     Text {
                         id: text12
-                        x: 246
-                        y: 205
+                        x: 247
+                        y: 204
                         text: qsTr("Text")
                         font.pixelSize: 21
                     }
 
                     Text {
                         id: text13
-                        x: 323
-                        y: 206
+                        x: 324
+                        y: 205
                         color: "#808080"
                         text: qsTr("Text")
                         font.pixelSize: 21
@@ -418,7 +455,7 @@ Item {
 
                     Text {
                         id: text14
-                        x: 247
+                        x: 249
                         y: 277
                         width: 41
                         height: 25
@@ -428,8 +465,8 @@ Item {
 
                     Text {
                         id: text15
-                        x: 319
-                        y: 278
+                        x: 321
+                        y: 276
                         height: 25
                         color: "#808080"
                         text: qsTr("Text")
@@ -439,8 +476,8 @@ Item {
 
                     Text {
                         id: text16
-                        x: 247
-                        y: 352
+                        x: 248
+                        y: 351
                         text: qsTr("Text")
                         font.pixelSize: 21
                     }
@@ -449,7 +486,7 @@ Item {
                         id: text17
                         x: 323
                         y: 351
-                        color: "#a9a9a9"
+                        color: "#808080"
                         text: qsTr("Text")
                         font.pixelSize: 21
                     }
@@ -516,24 +553,24 @@ Item {
 
                 Text {
                     id: text21
-                    x: 308
-                    y: 141
+                    x: 300
+                    y: 130
                     color: "#ffffff"
                     text: qsTr("Max")
-                    font.pixelSize: 21
+                    font.pixelSize: 24
                 }
-
+                
 
 
 
 
                 Text {
                     id: text22
-                    x: 311
-                    y: 190
+                    x: 300
+                    y: 174
                     color: "#ffffff"
                     text: qsTr("Min")
-                    font.pixelSize: 21
+                    font.pixelSize: 24
                 }
 
 
@@ -547,10 +584,10 @@ Item {
 
             Image {
                 id: image
-                x: 57
+                x: 17
                 y: 20
-                width: 229
-                height: 100
+                width: 114
+                height: 39
                 source: "assets/ic_logo.png"
             }
 
