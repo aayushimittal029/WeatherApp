@@ -27,12 +27,15 @@ Item {
     Page{
         anchors.fill: parent
         // Adding App Page Header Section
+        Component.onCompleted: {
+            mapArea.zoomToPoint(point);
+            mapArea.showPin(point);
+        }
+
         header: ToolBar{
             id:header
-
             contentHeight: 56 * app.scaleFactor
             Material.primary: app.primaryColor
-
             RowLayout{
                 anchors.fill: parent
                 spacing:0
@@ -68,6 +71,7 @@ Item {
                 }
             }
         }
+
         // Header Section ends
 
         // Page Body
@@ -87,6 +91,7 @@ Item {
             }
 
         }
+
 
     }
 }

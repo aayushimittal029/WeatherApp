@@ -16,6 +16,7 @@ import "../controls"
 MapView{
     id: mapView
 
+    property alias pointGraphicsOverlay: pointGraphicsOverlay
     property alias compass: compass
 
     zoomByPinchingEnabled: true
@@ -32,6 +33,40 @@ MapView{
         compass: compass
     }
 
+    ColumnLayout{
+        width: 50*app.scaleFactor
+        height: mapView.mapRotation != 0 ? 150*app.scaleFactor + spacing*2 : 100*app.scaleFactor + spacing
+        anchors {
+            right: parent.right
+            rightMargin: 10*app.scaleFactor
+            bottom: parent.bottom
+            bottomMargin: (parent.height-height)/2
+        }
+        spacing: 1*app.scaleFactor
+
+        Behavior on anchors.bottomMargin {
+            NumberAnimation {duration: 200}
+        }
+
+        property color btnColor: "#808080"
+        property color btnActiveColor: "blue"
+
+        MapRoundButton{
+            id: locationBtn
+            Layout.fillWidth: true
+            Layout.preferredHeight: parent.width
+            radius: parent.width/2
+            checkable: true
+            imageColor: positionSource.active && checked ? parent.btnActiveColor : parent.btnColor
+            imageSource: "../assets/location.png"
+            onClicked: {
+                zoomToCurrentLocation();
+                mapView.locationDisplay.start();
+                mapView.locationDisplay.autoPanMode = Enums.LocationDisplayAutoPanModeRecenter;
+            }
+        }
+    }
+
     PositionSource {
         id: positionSource
         active: true
@@ -44,9 +79,20 @@ MapView{
         }
     }
 
+    GraphicsOverlay {
+        id: pointGraphicsOverlay
+        SimpleRenderer {
+            PictureMarkerSymbol{
+                width: 38*app.scaleFactor
+                height: 38*app.scaleFactor
+                url: "../assets/pin.png"
+            }
+        }
+    }
 
     onSetViewpointCompleted: {
         pointGraphicsOverlay.visible = true;
+        mapView.locationDisplay.start();
     }
 
     Compass {
@@ -68,11 +114,11 @@ MapView{
     }
 
     function showPin(point){
-        pointGraphicsOverlay.visible = false;
+        pointGraphicsOverlay.visible = true;
         pointGraphicsOverlay.graphics.remove(0, 1);
-        var pictureMarkerSymbol = ArcGISRuntimeEnvironment.createObject("PictureMarkerSymbol", {width: 40*app.scaleFactor, height: 40*app.scaleFactor, url: "../images/pin.png"});
+        var pictureMarkerSymbol = ArcGISRuntimeEnvironment.createObject("PictureMarkerSymbol", {width: 40*app.scaleFactor, height: 40*app.scaleFactor, url: "../assets/pin.png"});
         var graphic = ArcGISRuntimeEnvironment.createObject("Graphic", {geometry: point});
-        pointGraphicsOverlay.graphics.insert(0, graphic);
+        pointGraphicsOverlay.graphics.insert(1, graphic);
     }
 }
 

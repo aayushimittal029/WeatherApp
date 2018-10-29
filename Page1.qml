@@ -19,6 +19,15 @@ import QtQuick.Controls 2.1
 import QtQuick.Controls.Material 2.1
 import './controls'
 import './views'
+import QtGraphicalEffects 1.0
+
+import ArcGIS.AppFramework 1.0
+import ArcGIS.AppFramework.Controls 1.0
+import Esri.ArcGISRuntime 100.2
+
+import QtPositioning 5.3
+import QtSensors 5.3
+
 Item {
     signal next();
     signal back();
@@ -28,8 +37,24 @@ Item {
         // Adding App Page Header Section
         Component.onCompleted: {
             var coordinates = []
+             var month=["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+
+            request('http://api.openweathermap.org/data/2.5/weather?q=San Jose,us&appid=668f6d8c77a2d45bc2e5e2d601c838e2&units=imperial', function (o) {
+                var d = eval('new Object(' + o.responseText + ')');
+                coordinates[0] = d.coord.lon
+                coordinates[1] = d.coord.lat
+                getForcastData(coordinates);
+
+            });
+        }
+        function sleep(delay) {
+            var start = new Date().getTime();
+            while (new Date().getTime() < start + delay);
+        }
+        function getForcastData(coordinates){
+            getCurrentLocation(coordinates);
             var month=["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
-            request('http://api.openweathermap.org/data/2.5/weather?q=New york,us&appid=668f6d8c77a2d45bc2e5e2d601c838e2&units=imperial', function (o) {
+            request('http://api.openweathermap.org/data/2.5/weather?lat='+ coordinates[1] + "&lon=" + coordinates[0] +"&appid=668f6d8c77a2d45bc2e5e2d601c838e2&units=imperial", function (o) {
                 var d = eval('new Object(' + o.responseText + ')');
                 console.log(JSON.stringify(d));
                 text1.text = d.name;
@@ -43,13 +68,7 @@ Item {
                 text18.text = "Humidity : " + Math.floor(d.main.humidity) + " %";
                 text19.text = "Visibility : " + Math.floor(d.visibility / 1600) + " mi";
 
-                coordinates[0] = d.coord.lon
-                coordinates[1] = d.coord.lat
-                getForcastData(coordinates);
             });
-        }
-
-        function getForcastData(coordinates){
             var forecastUrl = "http://api.openweathermap.org/data/2.5/forecast?lat="+ coordinates[1] + "&lon=" + coordinates[0] +"&appid=668f6d8c77a2d45bc2e5e2d601c838e2&units=imperial"
             console.log(forecastUrl);
             var forecasts = [];var k =0;
@@ -57,7 +76,7 @@ Item {
 
                 var forecastData = new Object();
                 var days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-                var month=["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+
                 var d = eval('new Object(' + o.responseText + ')');
                 for(var i =0; i< d.list.length ;i ++ ){
                     var subData = d.list[i];
@@ -113,6 +132,7 @@ Item {
             image6.source= "assets/" + forecasts[4].weather[0].description+ ".png"
         }
         function request(url, callback) {
+
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = (function(myxhr) {
                 return function() {
@@ -122,6 +142,13 @@ Item {
             xhr.open('GET', url, true);
             xhr.send('');
         }
+        function getCurrentLocation(coordinates){
+//            sleep(2000);
+            var currentPositionPoint = ArcGISRuntimeEnvironment.createObject("Point", {x: positionSource.position.coordinate.longitude, y: positionSource.position.coordinate.latitude, spatialReference: SpatialReference.createWgs84()});
+            coordinates[1] = parseFloat(Number(positionSource.position.coordinate.latitude)).toFixed(3);
+            coordinates[0] = parseFloat(Number(positionSource.position.coordinate.longitude)).toFixed(3);
+            console.log(coordinates);
+            }
 
         header: ToolBar{
             id:header
@@ -258,6 +285,11 @@ Item {
                             text: qsTr("Sunny")
                             font.pixelSize: 12
                         }
+                        PositionSource {
+                            id: positionSource
+                            active: true
+                            property bool isIntial :true
+                        }
                     }
 
                 }
@@ -269,42 +301,41 @@ Item {
                     color: "#1e90ff"
                     z: -1
                 }
-                Button{
-                    x: 252
-                    y: 75
-                    width: 40
-                    height: 23
-                    Material.elevation :10
-                    font.pixelSize: app.titleFontSize
-                    //font.bold: true
-                    //wrapMode: Text.Wrap
-                    padding: 16*app.scaleFactor
-                    text: qsTr("Open in  maps")
-                    onClicked:{
+                MapRoundButton{
+                    id: locationBtn
+                    x: 257
+                    y: 66
+                    width: 42
+                    height: 44
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: parent.width
+                    radius: parent.width/2
+                    imageSource: "assets/map-marker.png"
+                    onClicked: {
                         next();
                     }
-
-                    Text {
-                        id: text1
-                        x: -103
-                        y: -1
-                        width: 101
-                        height: 29
-                        color: "#ffffff"
-                        text: qsTr("San Jose")
-                        font.bold: true
-                        font.family: "Arial"
-                        horizontalAlignment: Text.AlignHCenter
-                        font.pixelSize: 21
-                    }
                 }
+                Text {
+                    id: text1
+                    x: 150
+                    y: 75
+                    width: 101
+                    height: 29
+                    color: "#ffffff"
+                    text: qsTr("Location")
+                    font.bold: true
+                    font.family: "Arial"
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: 21
+                }
+
                 Image {
                     id: image1
                     x: 133
                     y: 20
                     width: 37
                     height: 33
-                    source: "assets/sun (2).png"
+                    source: "assets/Zeus copy.png"
                 }
                 Rectangle {
                     id: rectangle1
@@ -536,19 +567,7 @@ Item {
                         font.pixelSize: 15
                     }
 
-
-
-
-
-
                 }
-
-
-
-
-
-
-
 
 
                 Text {
@@ -559,11 +578,6 @@ Item {
                     text: qsTr("Max")
                     font.pixelSize: 24
                 }
-                
-
-
-
-
                 Text {
                     id: text22
                     x: 300
@@ -572,13 +586,6 @@ Item {
                     text: qsTr("Min")
                     font.pixelSize: 24
                 }
-
-
-
-
-
-
-
 
             }
 

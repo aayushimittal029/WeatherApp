@@ -72,10 +72,10 @@ Item {
                 font.pixelSize: app.titleFontSize
                 //font.bold: true
                 //wrapMode: Text.Wrap
-                padding: 16*app.scaleFactor
                 text: qsTr("Start")
-                anchors.verticalCenterOffset: -113
-                anchors.horizontalCenterOffset: 10
+                padding: 1
+                anchors.verticalCenterOffset: 94
+                anchors.horizontalCenterOffset: 0
                 onClicked:{
                     next();
                 }
@@ -83,8 +83,8 @@ Item {
 
             Image {
                 id: image
-                x: 114
-                y: 230
+                x: 115
+                y: 454
                 width: 176
                 height: 71
                 source: "assets/ic_logo.png"
@@ -92,12 +92,13 @@ Item {
             
             Text {
                 id: text1
-                x: 86
-                y: 119
-                width: 302
+                x: 67
+                y: 102
+                width: 260
                 height: 44
                 color: "#f7f6f6"
-                text: qsTr("Find Today's Weather")
+                text: qsTr("Find Weather with")
+                horizontalAlignment: Text.AlignHCenter
                 textFormat: Text.RichText
                 font.italic: false
                 font.bold: true
@@ -106,21 +107,23 @@ Item {
             
             Image {
                 id: image1
-                x: 291
-                y: 239
-                width: 62
-                height: 62
-                source: "assets/sun (2).png"
+                x: 77
+                y: 226
+                width: 202
+                height: 222
+                source: "../../../../Downloads/zeus.png"
             }
 
             Text {
                 id: text2
-                x: 179
-                y: 174
-                color: "#ffffff"
-                text: qsTr("with the ")
+                x: 67
+                y: 140
+                color: "#f7f6f6"
+                text: qsTr("God of Weather the
+Zeus")
+                horizontalAlignment: Text.AlignHCenter
                 font.bold: true
-                font.pixelSize: 25
+                font.pixelSize: 30
             }
         }
     }
