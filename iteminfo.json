@@ -42,7 +42,7 @@
     "spatialReference": null,
     "tags": null,
     "thumbnail": "thumbnail/thumbnail.png",
-    "title": "Multipage Layout (Material Design)",
+    "title": "weatherApp",
     "type": "Native Application",
     "typeKeywords": [
         "API_QML",

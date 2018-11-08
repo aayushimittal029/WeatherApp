@@ -37,8 +37,6 @@ Item {
         // Adding App Page Header Section
         Component.onCompleted: {
             var coordinates = []
-             var month=["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
-
             request('http://api.openweathermap.org/data/2.5/weather?q=San Jose,us&appid=668f6d8c77a2d45bc2e5e2d601c838e2&units=imperial', function (o) {
                 var d = eval('new Object(' + o.responseText + ')');
                 coordinates[0] = d.coord.lon
@@ -47,10 +45,10 @@ Item {
 
             });
         }
-        function sleep(delay) {
-            var start = new Date().getTime();
-            while (new Date().getTime() < start + delay);
-        }
+      //  function sleep(delay) {
+        //    var start = new Date().getTime();
+          //  while (new Date().getTime() < start + delay);
+        //}
         function getForcastData(coordinates){
             getCurrentLocation(coordinates);
             var month=["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
@@ -59,7 +57,7 @@ Item {
                 console.log(JSON.stringify(d));
                 text1.text = d.name;
                 image7.source= "assets/" + d.weather[0].description+ ".png"
-                text20.text = d.main.temp + " \xB0 F"
+                text29.text = Math.floor(d.main.temp) + " \xB0 F"
                 text30.text = d.weather[0].description;
                 text28.text= "Today, "+ month[new Date().getMonth()] +" "+new Date().getDate()
                 text21.text = Math.floor(d.main.temp_max) + " \xB0F"
@@ -102,7 +100,6 @@ Item {
         }
         function fillForcastTexts(forecasts){
             text2.text =  "Tomorrow"
-            text8.text = "\u2193" + "\u2191" + Math.floor(forecasts[0].main.temp_max) + " \xB0F"
             text8.text = Math.floor(forecasts[0].main.temp_max) + " \xB0F"
             text9.text = Math.floor(forecasts[0].main.temp_min) + " \xB0F"
             text23.text = forecasts[0].weather[0].description
@@ -132,7 +129,6 @@ Item {
             image6.source= "assets/" + forecasts[4].weather[0].description+ ".png"
         }
         function request(url, callback) {
-
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = (function(myxhr) {
                 return function() {
@@ -143,12 +139,12 @@ Item {
             xhr.send('');
         }
         function getCurrentLocation(coordinates){
-//            sleep(2000);
             var currentPositionPoint = ArcGISRuntimeEnvironment.createObject("Point", {x: positionSource.position.coordinate.longitude, y: positionSource.position.coordinate.latitude, spatialReference: SpatialReference.createWgs84()});
             coordinates[1] = parseFloat(Number(positionSource.position.coordinate.latitude)).toFixed(3);
             coordinates[0] = parseFloat(Number(positionSource.position.coordinate.longitude)).toFixed(3);
             console.log(coordinates);
-            }
+
+         }
 
         header: ToolBar{
             id:header
@@ -270,8 +266,8 @@ Item {
 
                         Image {
                             id: image7
-                            x: 41
-                            y: 129
+                            x: 8
+                            y: 130
                             width: 65
                             height: 62
                             source: "assets/clear sky.png"
@@ -279,8 +275,8 @@ Item {
 
                         Text {
                             id: text30
-                            x: 112
-                            y: 153
+                            x: 79
+                            y: 154
                             color: "#ffffff"
                             text: qsTr("Sunny")
                             font.pixelSize: 12
@@ -301,6 +297,7 @@ Item {
                     color: "#1e90ff"
                     z: -1
                 }
+
                 MapRoundButton{
                     id: locationBtn
                     x: 257
@@ -314,6 +311,7 @@ Item {
                     onClicked: {
                         next();
                     }
+
                 }
                 Text {
                     id: text1
@@ -584,6 +582,17 @@ Item {
                     y: 174
                     color: "#ffffff"
                     text: qsTr("Min")
+                    font.pixelSize: 24
+                }
+
+                Text {
+                    id: text29
+                    x: 161
+                    y: 151
+                    width: 57
+                    height: 36
+                    color: "#ffffff"
+                    text: qsTr("Current")
                     font.pixelSize: 24
                 }
 

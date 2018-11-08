@@ -28,6 +28,7 @@ Item {
         anchors.fill: parent
         // Adding App Page Header Section
         Component.onCompleted: {
+            zoomToCurrentLocation();
             mapArea.zoomToPoint(point);
             mapArea.showPin(point);
         }
@@ -76,6 +77,7 @@ Item {
 
         // Page Body
         // TODO:-Provide Code here to add items to the Page
+
         MapArea{
             id: mapArea
             anchors.fill: parent
@@ -91,7 +93,5 @@ Item {
             }
 
         }
-
-
     }
 }

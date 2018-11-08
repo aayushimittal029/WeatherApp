@@ -15,7 +15,6 @@ import "../controls"
 
 MapView{
     id: mapView
-
     property alias pointGraphicsOverlay: pointGraphicsOverlay
     property alias compass: compass
 
