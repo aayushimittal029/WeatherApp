@@ -80,21 +80,21 @@ It also shows additonal information like
 My idea to improve the UI design of the application
 Starting page of the WeatherApp
 <br /> 
-<img width="316" alt="screen shot 2018-10-28 at 10 48 52 pm" src="https://user-images.githubusercontent.com/32825210/47631566-ccabdc00-db03-11e8-9871-37c6010da6aa.png">
+<img width="317" alt="screen shot 2018-11-08 at 10 36 43 am" src="https://user-images.githubusercontent.com/32825210/48219821-6e240080-e342-11e8-8e68-a804c3de7751.png">
 
 
  <br />
  <br />
  Screen shows the weather for current location with additional information
  <br />
-<img width="317" alt="screen shot 2018-10-28 at 10 49 05 pm" src="https://user-images.githubusercontent.com/32825210/47631578-d33a5380-db03-11e8-8af4-7334a27b7a03.png">
+<img width="317" alt="screen shot 2018-11-08 at 10 36 55 am" src="https://user-images.githubusercontent.com/32825210/48219828-72e8b480-e342-11e8-9d1d-e452c26d4cee.png">
 
 
  <br />
  <br />
  Location of the current user
  <br />
-<img width="317" alt="screen shot 2018-10-28 at 10 49 21 pm" src="https://user-images.githubusercontent.com/32825210/47631585-d7667100-db03-11e8-9e9d-2b71470189e6.png">
+<img width="317" alt="screen shot 2018-11-08 at 10 37 10 am" src="https://user-images.githubusercontent.com/32825210/48219831-74b27800-e342-11e8-9fa8-d740a50211bd.png">
 
 
 
