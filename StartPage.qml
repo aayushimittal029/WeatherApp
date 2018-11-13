@@ -111,7 +111,7 @@ Item {
                 y: 226
                 width: 202
                 height: 222
-                source: "../../../../Downloads/zeus.png"
+                source: "assets/Zeus copy.png"
             }
 
             Text {
